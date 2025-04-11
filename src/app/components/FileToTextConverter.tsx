@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, {  useCallback } from 'react';
+
 import * as mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import { parse } from 'papaparse';
-import { File, Send } from 'lucide-react';
+import { File} from 'lucide-react';
 
 interface FileToTextConverterProps {
   onTextExtracted: (text: string, fileName: string) => void;
@@ -11,17 +11,17 @@ interface FileToTextConverterProps {
   allowedFileTypes?: string[];
 }
 
-const defaultAllowedTypes = [
-  'text/plain',
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'text/csv',
-  'application/sql',
-  'application/x-sql'
-];
+// const defaultAllowedTypes = [
+//   'text/plain',
+//   'application/pdf',
+//   'application/msword',
+//   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+//   'application/vnd.ms-excel',
+//   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+//   'text/csv',
+//   'application/sql',
+//   'application/x-sql'
+// ];
 
 const FileToTextConverter: React.FC<FileToTextConverterProps> = ({
   onTextExtracted,
@@ -130,7 +130,7 @@ const FileToTextConverter: React.FC<FileToTextConverterProps> = ({
                       }
                       resolve(latin1Text);
                     },
-                    error: (error) => {
+                    error: () => {
                       resolve(text); // Devolver el texto original si falla
                     }
                   });
@@ -140,7 +140,7 @@ const FileToTextConverter: React.FC<FileToTextConverterProps> = ({
                 resolve(text);
               }
             },
-            error: (error) => {
+            error: (error: any) => {
               reject(error);
             }
           });
