@@ -44,7 +44,7 @@ const AIChatComponent: React.FC<ChatProps> = ({
     if (!inputMessage.trim()) return;
     onClickRessponse?.(inputMessage)
     const userMessage: Message = { role: 'user', content: inputMessage };
-    setMessages((prev: ChatMessage[]) => [...prev, { role: 'user', content: inputMessage } as ChatMessage]);
+    setMessages([...messages, { role: 'user', content: inputMessage } as ChatMessage]);
     if(inputFile !="")
       userMessage.content += ` FILE: ${inputFile}`
     const msn = [...messages, userMessage]
@@ -73,15 +73,16 @@ const AIChatComponent: React.FC<ChatProps> = ({
   };
 
   const updateLastMessage = useCallback((content: string) => {
-    setMessages(prevMessages => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setMessages((prevMessages: any) => {
       const lastMessage = prevMessages[prevMessages.length - 1];
       if (lastMessage?.role === 'assistant') {
         return [
           ...prevMessages.slice(0, -1),
-          { role: 'assistant', content: content }
+          { role: 'assistant', content: content } as ChatMessage
         ];
       } else {
-        return [...prevMessages, { role: 'assistant', content: content }];
+        return [...prevMessages, { role: 'assistant', content: content } as ChatMessage];
       }
     });
   }, []);
