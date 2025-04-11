@@ -2,7 +2,7 @@
 
 AI Chat Hub is a Next.js application that allows users to chat with up to three AI models simultaneously, upload files for context, and generate merged responses that combine the best insights from multiple models.
 
-![AI Chat Hub Screenshot](https://via.placeholder.com/800x450)
+- Web Page: https://ai-hub-next-js.vercel.app/
 
 ## Features
 
