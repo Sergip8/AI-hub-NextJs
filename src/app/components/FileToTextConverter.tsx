@@ -140,7 +140,7 @@ const FileToTextConverter: React.FC<FileToTextConverterProps> = ({
                 resolve(text);
               }
             },
-            error: (error: any) => {
+            error: (error: Error) => {
               reject(error);
             }
           });

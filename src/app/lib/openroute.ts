@@ -84,12 +84,16 @@ export const openrouter = {
             return `${data.response} None`;
           }
         }
-      } catch (error: any) {
+      
+      } catch (error: unknown) {
         retries++;
         console.error(`Error during API call: ${error}. Retry attempt ${retries}/${maxRetries}`);
         if (retries >= maxRetries) {
           console.error("Maximum retries reached. Returning error response.");
-          return `${data.response} Error: ${error.message || error}`;
+          if (error instanceof Error) {
+            return `${data.response} Error: ${error.message}`;
+          }
+          return `${data.response} Error: ${String(error)}`;
         }
       }
     }
