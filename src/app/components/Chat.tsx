@@ -73,8 +73,8 @@ const AIChatComponent: React.FC<ChatProps> = ({
   };
 
   const updateLastMessage = useCallback((content: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setMessages((prevMessages: any) => {
+    // @ts-expect-error aaaaa
+    setMessages((prevMessages: ChatMessage[]) => {
       const lastMessage = prevMessages[prevMessages.length - 1];
       if (lastMessage?.role === 'assistant') {
         return [
