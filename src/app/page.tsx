@@ -1,103 +1,97 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useState } from "react";
+import AIChatComponent from "./components/Chat";
+import { MultiSelect } from "./components/Select";
+import StyleMode from "./components/StyleMode";
+import { openrouter } from "./lib/openroute";
+import {  useStateContext} from "./context/FilterContextProvider";
+import {Option} from "./models/select"
+import 'prismjs/themes/prism-tomorrow.css'; 
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const [selectedItems, setSelectedItems] = useState<Option[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [chatModels, setChatModels] = useState<Option[]>([]);
+  const {linkInp, updateSetlinkInp,  mergeResponse, models, setModels, setMergeResponse} = useStateContext()
+  useEffect(() => {
+    openrouter.getModels().then(d => {
+      console.log(d.data)
+      setSelectedItems(d.data.filter((m: { pricing: { completion: string; }; }) => m.pricing.completion == "0").map((m: { id: string; name: string }) => Object.assign({value: m.id, label: m.name})))
+
+    })
+    console.log(process.env)
+  },[])
+  useEffect(() => {
+    
+    if(mergeResponse){
+      if(models.length > 0){
+        setChatModels([models[0]])
+        return
+      }
+    }
+    setChatModels(models)
+  }, [mergeResponse, models])
+
+  const handleChange = (e: { target: { checked: boolean; }; }) => {
+    console.log(e.target.checked)
+    updateSetlinkInp(e.target.checked);
+  };
+
+  return (
+    <div className="min-h-screen p-8 bg-[#FFF7F0] dark:bg-[#0A1128] text-[#4B3F35] dark:text-[#A3B4D8] transition-colors duration-300">
+    {/* Header */}
+    <div className="flex justify-between items-center mb-6">
+      <h1 className="text-3xl font-bold text-[#A35400] dark:text-[#A3B4D8]">AI Framework Selector</h1>
+      <StyleMode />
     </div>
+
+    {/* MultiSelect and Checkbox */}
+    <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
+      <MultiSelect
+        options={selectedItems}
+        onChange={setModels}
+        placeholder="Choose frameworks"
+        maxSelected={3}
+      />
+      <label className="flex items-center gap-2 text-sm cursor-pointer">
+        <input 
+          type="checkbox" 
+          checked={linkInp} 
+          onChange={handleChange} 
+          className="form-checkbox h-5 w-5 text-[#A35400] dark:text-[#0A1128] bg-[#FFF7F0] dark:bg-[#1C2D4D] border-[#A35400] dark:border-[#1C2D4D] rounded focus:ring-0"
+        />
+        Enable Link Input
+      </label>
+      <label className="flex items-center gap-2 text-sm cursor-pointer">
+        <input 
+          type="checkbox" 
+          checked={mergeResponse} 
+          onChange={(e) => setMergeResponse(e.target.checked)} 
+          className="form-checkbox h-5 w-5 text-[#A35400] dark:text-[#0A1128] bg-[#FFF7F0] dark:bg-[#1C2D4D] border-[#A35400] dark:border-[#1C2D4D] rounded focus:ring-0"
+        />
+        Get Merged Response
+      </label>
+    </div>
+
+    {/* Chat Components */}
+    <section className="flex  gap-3 w-full">
+      {chatModels.map(m => (
+        <div 
+          key={m.value} 
+          className="p-4 rounded-xl w-full shadow-md bg-[#FFEBD6] dark:bg-[#1C2D4D] border border-[#A35400] dark:border-[#1C2D4D] transition-colors duration-300"
+        >
+          <AIChatComponent 
+            input={inputMessage} 
+            onChange={setInputMessage} 
+            
+            model={m.value} 
+          />
+        </div>
+      ))}
+    </section>
+  
+  </div>
   );
 }
